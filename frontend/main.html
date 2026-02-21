@@ -28,6 +28,20 @@
   --danger: #ef4444;
 }
 
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --border: #e2e8f0;
+  --accent: #059669; /* Darker green for contrast */
+  --accent2: #7c3aed;
+  --accent3: #ea580c;
+  --sol: #7c3aed;
+  --text: #0f172a;
+  --muted: #64748b;
+  --danger: #dc2626;
+}
+
   html { scroll-behavior: smooth; }
 
   body {
@@ -261,6 +275,108 @@
   .card-title-icon { font-size: 16px; }
 
   .card-body { padding: 20px; }
+
+  /* ──── MODAL ──── */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active { display: flex; }
+
+  .modal-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-input, .form-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: rgba(0, 245, 160, 0.4);
+  }
+
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: var(--muted);
+  }
+
+  .form-helper {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .modal-buttons .btn {
+    flex: 1;
+    justify-content: center;
+  }
 
   /* ──── CHATBOT ──── */
   .chat-window {
@@ -639,6 +755,10 @@
     <a class="nav-item" href="#">
       <span class="nav-icon">⚙️</span> Settings
     </a>
+    
+    <a class="nav-item" onclick="openContextModal()" style="cursor: pointer;">
+      <span class="nav-icon">🎯</span> Chatbot Context
+    </a>
 
     <div class="sidebar-footer">
       <div class="user-pill">
@@ -659,12 +779,14 @@
     <div class="header">
       <div>
         <div class="page-title">Dashboard</div>
-        <div style="font-size:13px; color:var(--muted); margin-top:4px;">Welcome back, Alex · Friday Feb 20, 2026</div>
+        <div style="font-size:13px; color:var(--muted); margin-top:4px;">Welcome Back, Alex · Friday Feb 20, 2026</div>
       </div>
       <div class="header-actions">
         <span class="badge badge-green"><span class="badge-dot"></span>API Connected</span>
         <span class="badge badge-purple"><span class="badge-dot"></span>SOL Wallet</span>
         <button class="btn btn-accent btn-sm">+ New Project</button>
+        <button class="btn btn-outline btn-sm" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">🌙</span>
+        </button>
       </div>
     </div>
 
@@ -939,18 +1061,111 @@
   </main>
 </div>
 
+<!-- HACKATHON CONTEXT MODAL -->
+<div class="modal" id="contextModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>🎯 Chatbot Context Setup</span>
+      <button class="modal-close" onclick="closeContextModal()">✕</button>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Hackathon Name</label>
+      <input class="form-input" id="hackathonName" placeholder="e.g., Web3 AI Hackathon 2026" />
+      <div class="form-helper">The name of your hackathon event</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Event Description & Context</label>
+      <textarea class="form-textarea" id="hackathonDescription" placeholder="Briefly describe your hackathon theme, goals, challenges, tech stack, timeline, etc. This helps the AI understand your event better."></textarea>
+      <div class="form-helper">Examples: AI/ML focused, Web3 track, sustainability theme, specific tools required, etc.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Custom System Instructions</label>
+      <textarea class="form-textarea" id="customInstructions" placeholder="Optional: Custom instructions for how the chatbot should behave. If left blank, will use hackathon description instead."></textarea>
+      <div class="form-helper">Advanced: Define specific behavior, tone, or constraints for the chatbot</div>
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn btn-outline" onclick="resetContextForm()">Reset</button>
+      <button class="btn btn-accent" onclick="saveContext()">Save Context</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  // ── BACKEND CONFIG ──
+  const API_URL = 'http://localhost:3000';
+
+  // ── CONTEXT MODAL ──
+  function openContextModal() {
+    document.getElementById('contextModal').classList.add('active');
+    loadContextForm();
+  }
+
+  function closeContextModal() {
+    document.getElementById('contextModal').classList.remove('active');
+  }
+
+  function loadContextForm() {
+    // Load current context from backend
+    fetch(`${API_URL}/context`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('hackathonName').value = data.name || '';
+        document.getElementById('hackathonDescription').value = data.description || '';
+        document.getElementById('customInstructions').value = data.customInstructions || '';
+      })
+      .catch(err => console.error('Error loading context:', err));
+  }
+
+  function saveContext() {
+    const name = document.getElementById('hackathonName').value.trim();
+    const description = document.getElementById('hackathonDescription').value.trim();
+    const customInstructions = document.getElementById('customInstructions').value.trim();
+
+    if (!name && !description) {
+      alert('Please enter at least a hackathon name or description');
+      return;
+    }
+
+    fetch(`${API_URL}/context`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description, customInstructions })
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('✅ Context saved:', data);
+        closeContextModal();
+        alert('✅ Chatbot context updated successfully!\n\nThe AI will now be customized for: ' + name);
+      })
+      .catch(err => {
+        console.error('Error saving context:', err);
+        alert('❌ Error saving context. Make sure the backend server is running.');
+      });
+  }
+
+  function resetContextForm() {
+    if (confirm('Are you sure you want to reset all context?')) {
+      fetch(`${API_URL}/context/reset`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          console.log('✅ Context reset:', data);
+          document.getElementById('hackathonName').value = '';
+          document.getElementById('hackathonDescription').value = '';
+          document.getElementById('customInstructions').value = '';
+          alert('✅ Context reset to default');
+        })
+        .catch(err => {
+          console.error('Error resetting context:', err);
+          alert('❌ Error resetting context.');
+        });
+    }
+  }
+
   // ── CHAT ──
-  const responses = [
-    "Great question! Based on your project stack, I'd recommend using React with Tailwind for the frontend and integrating the Anthropic Claude API for your chatbot backend.",
-    "For Solana integration, check out @solana/web3.js and Phantom Wallet adapter. I can help scaffold the transaction code if you'd like!",
-    "Found 14 hackathons within 50 miles of Davidson, NC. The closest is MLH Local Hack Day in Durham on Feb 28th — registration closes soon!",
-    "I can auto-generate your MkDocs YAML config from your repo structure. Want me to scan your /src directory and create the nav tree?",
-    "Your team velocity looks strong! At this pace you should have MVP ready 6 hours before the demo deadline. Keep it up! 🚀"
-  ];
-
-  let msgIdx = 0;
-
   function sendMessage() {
     const input = document.getElementById('chatInput');
     const val = input.value.trim();
@@ -975,17 +1190,43 @@
     input.value = '';
     win.scrollTop = win.scrollHeight;
 
-    setTimeout(() => {
-      document.getElementById('typing')?.remove();
-      const resp = responses[msgIdx % responses.length];
-      msgIdx++;
-      win.innerHTML += `
-        <div class="msg bot">
-          <div class="msg-avatar bot">⬡</div>
-          <div class="msg-bubble">${resp}</div>
-        </div>`;
-      win.scrollTop = win.scrollHeight;
-    }, 1200);
+    // Send message to backend API
+    fetch(`${API_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: val })
+    })
+      .then(res => res.json())
+      .then(data => {
+        const typing = document.getElementById('typing');
+        if (typing) typing.remove();
+        
+        if (data.error) {
+          win.innerHTML += `
+            <div class="msg bot">
+              <div class="msg-avatar bot">⬡</div>
+              <div class="msg-bubble">❌ Error: ${escHtml(data.error)}</div>
+            </div>`;
+        } else {
+          win.innerHTML += `
+            <div class="msg bot">
+              <div class="msg-avatar bot">⬡</div>
+              <div class="msg-bubble">${escHtml(data.reply)}</div>
+            </div>`;
+        }
+        win.scrollTop = win.scrollHeight;
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        const typing = document.getElementById('typing');
+        if (typing) typing.remove();
+        win.innerHTML += `
+          <div class="msg bot">
+            <div class="msg-avatar bot">⬡</div>
+            <div class="msg-bubble">❌ Connection error. Is the backend server running on port 3000?</div>
+          </div>`;
+        win.scrollTop = win.scrollHeight;
+      });
   }
 
   document.getElementById('chatInput').addEventListener('keydown', e => {
@@ -1026,6 +1267,27 @@
   function buildDocs() {
     alert('⚡ MkDocs build triggered!\n\nRunning: mkdocs build --strict\nOutput: /site directory\nDeploy target: GitHub Pages');
   }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateIcon(newTheme);
+  }
+
+  function updateIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    icon.innerText = theme === 'dark' ? '🌙' : '☀️';
+  }
+
+  // Initialize Theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateIcon(savedTheme);
 </script>
+
 </body>
 </html>
