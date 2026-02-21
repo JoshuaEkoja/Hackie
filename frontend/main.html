@@ -1,8 +1,1031 @@
 <!DOCTYPE html>
-<html lang="eng">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content=""width=device-width, intial-
-    scale="1.0"> = $0
-    
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HackBase — Your Hackathon Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Clash+Display:wght@400;500;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+  --radius: 12px;
+  /* Add other non-color variables here */
+}
+
+/* DARK THEME (Default) */
+[data-theme="dark"], :root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #18181f;
+  --border: #252530;
+  --accent: #00f5a0;
+  --accent2: #7c3aed;
+  --accent3: #f97316;
+  --sol: #9945FF;
+  --text: #e8e8f0;
+  --muted: #6b6b80;
+  --danger: #ef4444;
+}
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ──── NOISE TEXTURE OVERLAY ──── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
+
+  /* ──── LAYOUT ──── */
+  .shell { display: flex; height: 100vh; }
+
+  /* ──── SIDEBAR ──── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sidebar::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
+    background: linear-gradient(to top, rgba(0,245,160,0.05), transparent);
+    pointer-events: none;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    color: #000;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px; font-weight: 600;
+    color: var(--muted);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    text-decoration: none;
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+
+  .nav-item.active {
+    color: var(--accent);
+    background: rgba(0,245,160,0.08);
+    border-color: rgba(0,245,160,0.2);
+  }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px 14px 4px;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--surface2);
+    cursor: pointer;
+  }
+
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+  }
+
+  .user-info { flex: 1; }
+  .user-name { font-size: 13px; font-weight: 600; }
+  .user-role { font-size: 11px; color: var(--muted); }
+
+  /* ──── MAIN CONTENT ──── */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* ──── HEADER BAR ──── */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 600;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .badge-green { background: rgba(0,245,160,0.12); color: var(--accent); border: 1px solid rgba(0,245,160,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+  .badge-orange { background: rgba(249,115,22,0.12); color: var(--accent3); border: 1px solid rgba(249,115,22,0.25); }
+
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ──── STAT CARDS ──── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); border-color: #3a3a50; }
+
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+
+  .stat-card:nth-child(1)::before { background: var(--accent); }
+  .stat-card:nth-child(2)::before { background: var(--accent2); }
+  .stat-card:nth-child(3)::before { background: var(--sol); }
+  .stat-card:nth-child(4)::before { background: var(--accent3); }
+
+  .stat-label {
+    font-size: 11px; font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .stat-value {
+    font-size: 32px; font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-sub { font-size: 12px; color: var(--muted); }
+
+  /* ──── 2-COL GRID ──── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* ──── CARD ──── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .card-title {
+    font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-title-icon { font-size: 16px; }
+
+  .card-body { padding: 20px; }
+
+  /* ──── CHATBOT ──── */
+  .chat-window {
+    height: 280px;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--bg);
+  }
+
+  .chat-window::-webkit-scrollbar { width: 4px; }
+  .chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .msg {
+    display: flex; gap: 10px; max-width: 90%;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+  .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0;
+  }
+
+  .msg-avatar.bot { background: rgba(0,245,160,0.15); color: var(--accent); border: 1px solid rgba(0,245,160,0.3); }
+  .msg-avatar.user-av { background: rgba(124,58,237,0.2); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .msg.bot .msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .msg.user .msg-bubble { background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3); border-bottom-right-radius: 4px; color: #c4b5fd; }
+
+  .chat-input-row {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px;
+    background: var(--surface);
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .chat-input:focus { border-color: rgba(0,245,160,0.4); }
+  .chat-input::placeholder { color: var(--muted); }
+
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+
+  .btn-accent { background: var(--accent); color: #000; }
+  .btn-accent:hover { background: #00dca0; transform: translateY(-1px); }
+
+  .btn-sol { background: var(--sol); color: #fff; }
+  .btn-sol:hover { background: #8035e0; transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 6px; }
+
+  /* ──── HACKATHON CARDS ──── */
+  .hack-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--surface2);
+    transition: all 0.2s;
+    cursor: pointer;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hack-card:last-child { margin-bottom: 0; }
+
+  .hack-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .hack-card:hover { border-color: #3a3a50; transform: translateX(4px); }
+  .hack-card:hover::before { opacity: 1; }
+
+  .hack-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+
+  .hack-meta {
+    display: flex; gap: 12px; align-items: center;
+    font-size: 11px; color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 10px;
+  }
+
+  .hack-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .tag {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .tag.ai { color: var(--accent); border-color: rgba(0,245,160,0.2); background: rgba(0,245,160,0.06); }
+  .tag.web3 { color: var(--sol); border-color: rgba(153,69,255,0.2); background: rgba(153,69,255,0.06); }
+  .tag.fintech { color: var(--accent3); border-color: rgba(249,115,22,0.2); background: rgba(249,115,22,0.06); }
+
+  /* ──── DONATION / SOLANA ──── */
+  .sol-amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+
+  .sol-amount-btn {
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .sol-amount-btn:hover, .sol-amount-btn.selected {
+    border-color: var(--sol);
+    background: rgba(153,69,255,0.1);
+    color: #c084fc;
+  }
+
+  .sol-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .sol-input:focus { border-color: rgba(153,69,255,0.5); }
+
+  .wallet-address {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    word-break: break-all;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wallet-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--sol); flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+
+  /* ──── DOCS SECTION ──── */
+  .docs-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .docs-item:last-child { margin-bottom: 0; }
+  .docs-item:hover { border-color: #3a3a50; }
+
+  .docs-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+
+  .docs-info { flex: 1; }
+  .docs-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .docs-desc { font-size: 11px; color: var(--muted); }
+
+  .progress-bar {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent);
+    transition: width 1s ease;
+  }
+
+  /* ──── MAP PLACEHOLDER ──── */
+  .map-placeholder {
+    height: 180px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .map-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,160,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,160,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .map-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    position: absolute;
+    animation: mapPulse 2s infinite;
+  }
+
+  @keyframes mapPulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,245,160,0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(0,245,160,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,245,160,0); }
+  }
+
+  .map-dot:nth-child(2) { top: 40%; left: 35%; animation-delay: 0.4s; }
+  .map-dot:nth-child(3) { top: 60%; left: 65%; animation-delay: 0.8s; background: var(--accent2); box-shadow: 0 0 12px var(--accent2); }
+  .map-dot:nth-child(4) { top: 25%; left: 55%; animation-delay: 1.2s; background: var(--accent3); box-shadow: 0 0 12px var(--accent3); width: 8px; height: 8px; }
+
+  /* ──── ACTIVITY FEED ──── */
+  .activity-item {
+    display: flex; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-time { color: var(--muted); font-family: 'Space Mono', monospace; font-size: 11px; white-space: nowrap; padding-top: 2px; }
+
+  /* ──── SCROLLBAR ──── */
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-track { background: transparent; }
+  .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ──── STATUS INDICATOR ──── */
+  .status-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted);
+  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.green { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .status-dot.yellow { background: #facc15; box-shadow: 0 0 6px #facc15; }
+  .status-dot.purple { background: var(--sol); box-shadow: 0 0 6px var(--sol); }
+
+  /* ──── FULL-WIDTH GUTTER LABEL ──── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: -12px;
+  }
+
+  /* ──── TYPING INDICATOR ──── */
+  .typing { display: flex; gap: 4px; align-items: center; padding: 8px 0; }
+  .typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--muted);
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  /* ──── RESPONSIVE ──── */
+  @media (max-width: 1200px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .three-col { grid-template-columns: 1fr 1fr; }
+  }
+</style>
 </head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">H</div>
+      <div class="logo-text">Hack<span>Base</span></div>
+    </div>
+
+    <span class="nav-section-label">Navigation</span>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon">⬡</span> Dashboard
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">🤖</span> AI Assistant
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">📍</span> Find Hackathons
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◎</span> Donate (SOL)
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">📄</span> Docs
+    </a>
+
+    <span class="nav-section-label" style="margin-top: 8px;">Team</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">👥</span> Members
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">📋</span> Tasks
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⚙️</span> Settings
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="avatar">AJ</div>
+        <div class="user-info">
+          <div class="user-name">Alex Johnson</div>
+          <div class="user-role">Team Lead</div>
+        </div>
+        <span style="color: var(--muted); font-size: 12px;">⋮</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div style="font-size:13px; color:var(--muted); margin-top:4px;">Welcome back, Alex · Friday Feb 20, 2026</div>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-green"><span class="badge-dot"></span>API Connected</span>
+        <span class="badge badge-purple"><span class="badge-dot"></span>SOL Wallet</span>
+        <button class="btn btn-accent btn-sm">+ New Project</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">🤖 AI Queries</div>
+        <div class="stat-value" style="color: var(--accent)">1,284</div>
+        <div class="stat-sub">↑ 23% this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">📍 Hackathons Nearby</div>
+        <div class="stat-value" style="color: #a78bfa">14</div>
+        <div class="stat-sub">Within 50 miles</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">◎ SOL Raised</div>
+        <div class="stat-value" style="color: #c084fc">24.5</div>
+        <div class="stat-sub">≈ $2,940 USD</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">📄 Docs Coverage</div>
+        <div class="stat-value" style="color: var(--accent3)">78%</div>
+        <div class="stat-sub">MkDocs auto-gen</div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Chatbot + Hackathon Suggester -->
+    <div class="two-col">
+
+      <!-- AI CHATBOT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">🤖</span> AI Assistant
+          </div>
+          <span class="badge badge-green" style="font-size: 10px;"><span class="badge-dot"></span>Online</span>
+        </div>
+        <div class="chat-window" id="chatWindow">
+          <div class="msg bot">
+            <div class="msg-avatar bot">⬡</div>
+            <div class="msg-bubble">Hi! I'm your HackBase AI. I can help you with project ideas, code reviews, team management, or finding nearby hackathons. What do you need?</div>
+          </div>
+          <div class="msg user">
+            <div class="msg-avatar user-av">A</div>
+            <div class="msg-bubble">What are some good project ideas for a Web3 + AI hackathon?</div>
+          </div>
+          <div class="msg bot">
+            <div class="msg-avatar bot">⬡</div>
+            <div class="msg-bubble">Great combo! Here are 3 ideas:<br><br>
+              <strong>1. DeFi Yield Optimizer</strong> — AI that auto-rebalances portfolios on Solana.<br>
+              <strong>2. NFT Valuator</strong> — ML model predicting fair NFT prices.<br>
+              <strong>3. On-chain DAO Summarizer</strong> — LLM summarizing governance proposals.<br><br>
+              Want me to elaborate on any of these?
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chatInput" type="text" placeholder="Ask anything about your hackathon..." />
+          <button class="btn btn-accent" onclick="sendMessage()">Send ↗</button>
+        </div>
+      </div>
+
+      <!-- HACKATHON SUGGESTER -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">📍</span> Hackathon Finder
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="refreshHacks()">↻ Refresh</button>
+        </div>
+        <div class="card-body" style="padding: 16px;">
+          <div class="map-placeholder">
+            <div class="map-grid"></div>
+            <div class="map-dot" style="top:45%; left:38%;"></div>
+            <div class="map-dot"></div>
+            <div class="map-dot"></div>
+            <div class="map-dot"></div>
+            <span style="position:relative; font-size:12px; z-index:1;">📍 Showing results near Davidson, NC</span>
+          </div>
+
+          <div id="hackList">
+            <div class="hack-card">
+              <div class="hack-name">HackNC 2026</div>
+              <div class="hack-meta">
+                <span>📅 Mar 15–17</span>
+                <span>📍 Chapel Hill, NC</span>
+                <span style="color: var(--accent);">$10k prizes</span>
+              </div>
+              <div class="hack-tags">
+                <span class="tag ai">AI/ML</span>
+                <span class="tag web3">Web3</span>
+                <span class="tag">Open</span>
+              </div>
+            </div>
+            <div class="hack-card">
+              <div class="hack-name">Charlotte Fintech Hack</div>
+              <div class="hack-meta">
+                <span>📅 Apr 5–6</span>
+                <span>📍 Charlotte, NC</span>
+                <span style="color: var(--accent3);">$5k prizes</span>
+              </div>
+              <div class="hack-tags">
+                <span class="tag fintech">Fintech</span>
+                <span class="tag web3">Solana</span>
+              </div>
+            </div>
+            <div class="hack-card">
+              <div class="hack-name">MLH Local Hack Day</div>
+              <div class="hack-meta">
+                <span>📅 Feb 28</span>
+                <span>📍 Durham, NC</span>
+                <span style="color: #a78bfa;">Free entry</span>
+              </div>
+              <div class="hack-tags">
+                <span class="tag ai">AI</span>
+                <span class="tag">Beginner Friendly</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 3: Donation + Docs + Activity -->
+    <div class="three-col">
+
+      <!-- SOLANA DONATION -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">◎</span> Donate via Solana
+          </div>
+          <span class="badge badge-purple" style="font-size:10px;">Devnet</span>
+        </div>
+        <div class="card-body">
+          <div class="wallet-address">
+            <div class="wallet-dot"></div>
+            <span>7xKp...mN4q3bR...cX9wL</span>
+          </div>
+
+          <div style="font-size:12px; color:var(--muted); font-family:'Space Mono',monospace; margin-bottom:8px;">QUICK AMOUNTS (SOL)</div>
+          <div class="sol-amount-grid">
+            <button class="sol-amount-btn" onclick="selectAmount(this, '0.5')">0.5</button>
+            <button class="sol-amount-btn selected" onclick="selectAmount(this, '1')">1</button>
+            <button class="sol-amount-btn" onclick="selectAmount(this, '5')">5</button>
+          </div>
+
+          <input class="sol-input" id="solAmount" value="1" placeholder="Custom SOL amount" type="number" min="0.01" step="0.01" />
+
+          <div style="font-size:12px; color:var(--muted); margin-bottom:14px; display:flex; justify-content:space-between;">
+            <span>≈ <span id="usdVal">$120.00</span> USD</span>
+            <span>Fee: ~0.000005 SOL</span>
+          </div>
+
+          <button class="btn btn-sol" style="width:100%; justify-content:center;" onclick="handleDonate()">
+            ◎ Connect Wallet & Donate
+          </button>
+
+          <div style="margin-top: 12px;">
+            <div style="font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: 'Space Mono', monospace;">RECENT DONATIONS</div>
+            <div class="status-row" style="margin-bottom:6px;"><div class="status-dot green"></div>3z7P... donated 2.0 SOL · 5m ago</div>
+            <div class="status-row" style="margin-bottom:6px;"><div class="status-dot purple"></div>9kQR... donated 0.5 SOL · 1h ago</div>
+            <div class="status-row"><div class="status-dot yellow"></div>xBnT... donated 5.0 SOL · 3h ago</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MKDOCS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">📄</span> MkDocs
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="buildDocs()">⚡ Build</button>
+        </div>
+        <div class="card-body">
+          <div class="docs-item">
+            <div class="docs-icon" style="background:rgba(0,245,160,0.1); color:var(--accent);">📘</div>
+            <div class="docs-info">
+              <div class="docs-title">Getting Started</div>
+              <div class="docs-desc">Setup, installation, quickstart</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+            </div>
+            <span class="badge badge-green" style="font-size:10px;">95%</span>
+          </div>
+          <div class="docs-item">
+            <div class="docs-icon" style="background:rgba(124,58,237,0.1); color:#a78bfa;">🤖</div>
+            <div class="docs-info">
+              <div class="docs-title">AI Chatbot API</div>
+              <div class="docs-desc">Endpoints, auth, examples</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:70%; background: #a78bfa;"></div></div>
+            </div>
+            <span class="badge badge-purple" style="font-size:10px;">70%</span>
+          </div>
+          <div class="docs-item">
+            <div class="docs-icon" style="background:rgba(153,69,255,0.1); color:#c084fc;">◎</div>
+            <div class="docs-info">
+              <div class="docs-title">Solana Integration</div>
+              <div class="docs-desc">Wallet, transactions, devnet</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:60%; background: var(--sol);"></div></div>
+            </div>
+            <span class="badge" style="font-size:10px;background:rgba(153,69,255,0.1);color:#c084fc;border:1px solid rgba(153,69,255,0.2)">60%</span>
+          </div>
+          <div class="docs-item">
+            <div class="docs-icon" style="background:rgba(249,115,22,0.1); color:var(--accent3);">📍</div>
+            <div class="docs-info">
+              <div class="docs-title">Hackathon Finder</div>
+              <div class="docs-desc">Location API, filters, schema</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:45%; background: var(--accent3);"></div></div>
+            </div>
+            <span class="badge badge-orange" style="font-size:10px;">45%</span>
+          </div>
+
+          <button class="btn btn-outline" style="width:100%; justify-content:center; margin-top:8px;" onclick="alert('Opening MkDocs preview at localhost:8000')">
+            🌐 Preview Docs Site
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">⚡</span> Activity
+          </div>
+          <span style="font-size:11px; color:var(--muted); font-family:'Space Mono',monospace;">LIVE</span>
+        </div>
+        <div class="card-body" style="padding: 16px 20px;">
+          <div class="activity-item">
+            <div class="activity-time">now</div>
+            <div>🤖 AI answered <strong>query #1284</strong></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-time">2m</div>
+            <div>◎ Received <strong>2.0 SOL</strong> donation</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-time">5m</div>
+            <div>📄 Docs auto-built — <strong>4 pages</strong> updated</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-time">12m</div>
+            <div>📍 Found <strong>3 new hackathons</strong> near you</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-time">1h</div>
+            <div>👤 <strong>Maya</strong> joined team</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-time">2h</div>
+            <div>◎ Wallet connected — <strong>devnet</strong></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-time">3h</div>
+            <div>⚡ Project <strong>HackBase</strong> initialized</div>
+          </div>
+
+          <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
+            <div style="font-size:11px; color:var(--muted); font-family:'Space Mono',monospace; margin-bottom:10px;">SYSTEM STATUS</div>
+            <div class="status-row" style="margin-bottom:8px;"><div class="status-dot green"></div>AI API — Operational</div>
+            <div class="status-row" style="margin-bottom:8px;"><div class="status-dot green"></div>Hackathon Feed — Live</div>
+            <div class="status-row" style="margin-bottom:8px;"><div class="status-dot purple"></div>Solana RPC — Devnet</div>
+            <div class="status-row"><div class="status-dot yellow"></div>MkDocs Build — Building</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ── CHAT ──
+  const responses = [
+    "Great question! Based on your project stack, I'd recommend using React with Tailwind for the frontend and integrating the Anthropic Claude API for your chatbot backend.",
+    "For Solana integration, check out @solana/web3.js and Phantom Wallet adapter. I can help scaffold the transaction code if you'd like!",
+    "Found 14 hackathons within 50 miles of Davidson, NC. The closest is MLH Local Hack Day in Durham on Feb 28th — registration closes soon!",
+    "I can auto-generate your MkDocs YAML config from your repo structure. Want me to scan your /src directory and create the nav tree?",
+    "Your team velocity looks strong! At this pace you should have MVP ready 6 hours before the demo deadline. Keep it up! 🚀"
+  ];
+
+  let msgIdx = 0;
+
+  function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const val = input.value.trim();
+    if (!val) return;
+
+    const win = document.getElementById('chatWindow');
+
+    // User message
+    win.innerHTML += `
+      <div class="msg user">
+        <div class="msg-avatar user-av">A</div>
+        <div class="msg-bubble">${escHtml(val)}</div>
+      </div>`;
+
+    // Typing indicator
+    win.innerHTML += `
+      <div class="msg bot" id="typing">
+        <div class="msg-avatar bot">⬡</div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>`;
+
+    input.value = '';
+    win.scrollTop = win.scrollHeight;
+
+    setTimeout(() => {
+      document.getElementById('typing')?.remove();
+      const resp = responses[msgIdx % responses.length];
+      msgIdx++;
+      win.innerHTML += `
+        <div class="msg bot">
+          <div class="msg-avatar bot">⬡</div>
+          <div class="msg-bubble">${resp}</div>
+        </div>`;
+      win.scrollTop = win.scrollHeight;
+    }, 1200);
+  }
+
+  document.getElementById('chatInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── DONATION ──
+  function selectAmount(btn, val) {
+    document.querySelectorAll('.sol-amount-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('solAmount').value = val;
+    updateUSD();
+  }
+
+  document.getElementById('solAmount').addEventListener('input', updateUSD);
+
+  function updateUSD() {
+    const sol = parseFloat(document.getElementById('solAmount').value) || 0;
+    document.getElementById('usdVal').textContent = '$' + (sol * 120).toFixed(2);
+  }
+
+  function handleDonate() {
+    alert('🔗 Connecting to Phantom Wallet...\n\nIn production this would trigger wallet adapter and sign a Solana transaction on devnet.');
+  }
+
+  // ── REFRESH HACKS ──
+  function refreshHacks() {
+    const list = document.getElementById('hackList');
+    list.style.opacity = '0.4';
+    setTimeout(() => { list.style.opacity = '1'; }, 800);
+  }
+
+  // ── BUILD DOCS ──
+  function buildDocs() {
+    alert('⚡ MkDocs build triggered!\n\nRunning: mkdocs build --strict\nOutput: /site directory\nDeploy target: GitHub Pages');
+  }
+</script>
+</body>
+</html>
