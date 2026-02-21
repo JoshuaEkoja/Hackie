@@ -1,1 +1,1 @@
-for chatbot feature
+for chatbot features
