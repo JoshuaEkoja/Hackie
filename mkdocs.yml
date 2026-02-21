@@ -3,7 +3,7 @@ theme:
   name: material
   palette:
     scheme: slate  # Automatically gives you Dark Mode
-    primary: deep purple
+    primary: deep purple and secondary: blue
 
 nav:
   - Overview: index.md
