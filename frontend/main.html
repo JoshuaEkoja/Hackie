@@ -28,6 +28,20 @@
   --danger: #ef4444;
 }
 
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --border: #e2e8f0;
+  --accent: #059669; /* Darker green for contrast */
+  --accent2: #7c3aed;
+  --accent3: #ea580c;
+  --sol: #7c3aed;
+  --text: #0f172a;
+  --muted: #64748b;
+  --danger: #dc2626;
+}
+
   html { scroll-behavior: smooth; }
 
   body {
@@ -659,12 +673,14 @@
     <div class="header">
       <div>
         <div class="page-title">Dashboard</div>
-        <div style="font-size:13px; color:var(--muted); margin-top:4px;">Welcome back, Alex · Friday Feb 20, 2026</div>
+        <div style="font-size:13px; color:var(--muted); margin-top:4px;">Welcome Back, Alex · Friday Feb 20, 2026</div>
       </div>
       <div class="header-actions">
         <span class="badge badge-green"><span class="badge-dot"></span>API Connected</span>
         <span class="badge badge-purple"><span class="badge-dot"></span>SOL Wallet</span>
         <button class="btn btn-accent btn-sm">+ New Project</button>
+        <button class="btn btn-outline btn-sm" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">🌙</span>
+        </button>
       </div>
     </div>
 
@@ -1026,6 +1042,27 @@
   function buildDocs() {
     alert('⚡ MkDocs build triggered!\n\nRunning: mkdocs build --strict\nOutput: /site directory\nDeploy target: GitHub Pages');
   }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateIcon(newTheme);
+  }
+
+  function updateIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    icon.innerText = theme === 'dark' ? '🌙' : '☀️';
+  }
+
+  // Initialize Theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateIcon(savedTheme);
 </script>
+
 </body>
 </html>
