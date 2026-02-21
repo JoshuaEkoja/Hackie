@@ -11,6 +11,12 @@ app.use(express.json());
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
+if (!process.env.GEMINI_API_KEY) {
+    console.error("❌ ERROR: API Key is missing! Check your .env file.");
+} else {
+    console.log("✅ API Key loaded successfully.");
+}
+
 //setup the model with general and newutral helpful and honest responses
 
 const model = genAI.getGenerativeModel({
@@ -50,13 +56,13 @@ app.post('/chat', async (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 5000; // start the server and listen on the specified port
+const PORT = process.env.PORT || 3000; // start the server and listen on the specified port
 
 app.get('/', (req, res) => {
-    res.send("Server is alive and kicking!");
+    res.send("working!");
 });
 
-app.listen(PORT, () => {
+app.listen(3000, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
