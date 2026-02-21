@@ -1,0 +1,13 @@
+site_name: Hackie
+theme:
+  name: material
+  palette:
+    scheme: slate  # Automatically gives you Dark Mode
+    primary: deep purple
+
+nav:
+  - Overview: index.md
+  - Features:
+      - AI Chatbot: ai-bot.md
+      - Solana Payments: solana.md
+  - Developer Setup: setup.md
