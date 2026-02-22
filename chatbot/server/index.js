@@ -4,6 +4,8 @@ import 'dotenv/config'; // This replaces the need for dotenv.config()
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getCollection } from './db.js';
 import { saveToMongo } from './db.js';
+import { scrapeMLH } from './scraper.js';
+import { geocodeLocations } from './geo.js';
 
 const app = express();
 
@@ -63,30 +65,30 @@ const DEFAULT_SYSTEM_INSTRUCTIONS = 'You are a helpful and honest assistant. You
 // Helper function to build system instructions with context
 function getSystemInstructions() {
     let instructions = DEFAULT_SYSTEM_INSTRUCTIONS;
-    
+
     if (hackathonContext.customInstructions.trim()) {
         instructions = hackathonContext.customInstructions;
     }
-    
+
     if (hackathonContext.description.trim()) {
         instructions += `\n\nYou are assisting participants in: ${hackathonContext.name}. Context: ${hackathonContext.description}`;
     }
-    
+
     return instructions;
 }
 
 // Endpoint to set/update hackathon context
 app.post('/context', (req, res) => {
     const { name, description, customInstructions } = req.body;
-    
+
     if (name) hackathonContext.name = name;
     if (description) hackathonContext.description = description;
     if (customInstructions) hackathonContext.customInstructions = customInstructions;
-    
+
     console.log('✅ Hackathon context updated:', hackathonContext);
-    res.json({ 
+    res.json({
         message: 'Context updated successfully',
-        context: hackathonContext 
+        context: hackathonContext
     });
 });
 
@@ -102,11 +104,11 @@ app.post('/context/reset', (req, res) => {
         description: '',
         customInstructions: ''
     };
-    
+
     console.log('✅ Context reset to default');
-    res.json({ 
+    res.json({
         message: 'Context reset to default',
-        context: hackathonContext 
+        context: hackathonContext
     });
 });
 
@@ -123,11 +125,11 @@ app.post('/chat', async (req, res) => {
             model: 'gemini-1.5-pro',
             systemInstructions: getSystemInstructions(),
         });
-        
+
         const chat = contextAwareModel.startChat({
             history: chatHistory,
         });
-        
+
         const result = await chat.sendMessage(message);
         const response = result.response.text();
 
