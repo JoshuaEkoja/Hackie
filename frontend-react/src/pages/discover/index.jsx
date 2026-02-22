@@ -121,25 +121,25 @@ const Discover = () => {
   }, [userLocation, selectedCategory, selectedRadius]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 ios-scroll">
+    <div className="min-h-screen bg-gray-50 pb-16 ios-scroll">
       {/* Header */}
       <div className="ios-header">
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="px-3 py-2">
+          <div className="flex items-center gap-2 mb-2">
             <button
               onClick={() => navigate(-1)}
-              className="ios-touch-target w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors no-tap-highlight"
+              className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors no-tap-highlight"
             >
-              <Icon name="ArrowLeft" size={20} color="#6B7280" />
+              <Icon name="ArrowLeft" size={16} color="#6B7280" />
             </button>
             <div className="flex-1">
-              <h1 className="text-[24px] font-bold text-gray-900 leading-tight">Discover Hackathons</h1>
-              <p className="text-[13px] text-gray-500">Find events near you</p>
+              <h1 className="text-lg font-bold text-gray-900 leading-tight">Discover</h1>
+              <p className="text-xs text-gray-500">Find events near you</p>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Select
               placeholder="Category"
               options={categories}
@@ -158,90 +158,90 @@ const Discover = () => {
 
       {/* Location Info */}
       {userLocation && (
-        <div className="bg-orange-50 border-b border-orange-100 px-4 py-2.5">
+        <div className="bg-orange-50 border-b border-orange-100 px-3 py-2">
           <div className="flex items-center gap-2">
-            <Icon name="MapPin" size={14} className="text-orange-600" />
-            <span className="text-[13px] text-gray-700 font-medium">
-              Showing {hackathons?.length} hackathons within {selectedRadius} miles
+            <Icon name="MapPin" size={12} className="text-orange-600" />
+            <span className="text-xs text-gray-700 font-medium">
+              {hackathons?.length} near you
             </span>
           </div>
         </div>
       )}
 
       {/* Results */}
-      <div className="px-4 py-4">
+      <div className="px-3 py-2">
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[1, 2, 3]?.map(i => (
-              <div key={i} className="ios-card p-4 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                <div className="h-3 bg-gray-200 rounded w-1/2 mb-3" />
-                <div className="h-2 bg-gray-200 rounded w-full" />
+              <div key={i} className="ios-card p-2.5 animate-pulse">
+                <div className="h-3 bg-gray-200 rounded w-3/4 mb-1.5" />
+                <div className="h-2.5 bg-gray-200 rounded w-1/2 mb-2" />
+                <div className="h-1.5 bg-gray-200 rounded w-full" />
               </div>
             ))}
           </div>
         ) : hackathons?.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Icon name="Search" size={32} className="text-gray-400" />
+          <div className="text-center py-8">
+            <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <Icon name="Search" size={28} className="text-gray-400" />
             </div>
-            <h3 className="font-bold text-[17px] text-gray-900 mb-2">No hackathons found</h3>
-            <p className="text-[14px] text-gray-600 mb-4 px-8">Try adjusting your filters or search radius</p>
+            <h3 className="font-bold text-sm text-gray-900 mb-1">No hackathons found</h3>
+            <p className="text-xs text-gray-600 mb-3 px-6">Try adjusting filters</p>
             <button
               onClick={() => {
                 setSelectedCategory('all');
                 setSelectedRadius('100');
               }}
-              className="h-[44px] px-6 bg-white border-2 border-gray-200 rounded-xl font-semibold text-[15px] text-gray-900 active:scale-[0.97] transition-transform no-tap-highlight"
+              className="py-2.5 px-4 bg-white border border-gray-200 rounded-lg font-semibold text-xs text-gray-900 active:bg-gray-100 transition-colors no-tap-highlight"
             >
-              Reset Filters
+              Reset
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {hackathons?.map(hackathon => (
               <button
                 key={hackathon?.id}
                 onClick={() => navigate(`/event/${hackathon?.id}`)}
-                className="w-full ios-card p-4 active:scale-[0.98] transition-transform no-tap-highlight text-left"
+                className="w-full ios-card p-2.5 active:bg-gray-100 transition-colors no-tap-highlight text-left"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h3 className="font-bold text-[17px] text-gray-900 mb-2 leading-tight">{hackathon?.name}</h3>
-                    <div className="flex items-center gap-3 text-[13px] text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Icon name="MapPin" size={13} color="#6B7280" />
+                    <h3 className="font-bold text-sm text-gray-900 mb-1.5 leading-tight">{hackathon?.name}</h3>
+                    <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                      <div className="flex items-center gap-0.5">
+                        <Icon name="MapPin" size={11} color="#6B7280" />
                         <span>{hackathon?.location}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Icon name="Navigation" size={13} color="#6B7280" />
-                        <span>{hackathon?.distance} mi</span>
-                      </div>
+                    </div>
+                    <div className="flex items-center gap-0.5 text-xs text-gray-600">
+                      <Icon name="Navigation" size={11} color="#6B7280" />
+                      <span>{hackathon?.distance} mi</span>
                     </div>
                   </div>
-                  <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 px-2.5 py-1.5 rounded-full capitalize whitespace-nowrap ml-2">
+                  <span className="text-[9px] font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full capitalize whitespace-nowrap ml-2">
                     {hackathon?.category?.replace('-', '/')}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-4 text-[13px] text-gray-600 mb-3">
-                  <div className="flex items-center gap-1">
-                    <Icon name="Calendar" size={13} color="#6B7280" />
-                    <span>{hackathon?.date}</span>
+                <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                  <div className="flex items-center gap-0.5">
+                    <Icon name="Calendar" size={11} color="#6B7280" />
+                    <span className="truncate">{hackathon?.date}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Icon name="Users" size={13} color="#6B7280" />
+                  <div className="flex items-center gap-0.5">
+                    <Icon name="Users" size={11} color="#6B7280" />
                     <span>{hackathon?.participants}</span>
                   </div>
                 </div>
 
                 {/* Funding Progress */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[12px]">
-                    <span className="text-gray-600 font-medium">Funding Progress</span>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-gray-600 font-medium">Funding</span>
                     <span className="font-bold text-orange-600">{hackathon?.fundingProgress}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"
                       style={{ width: `${hackathon?.fundingProgress}%` }}

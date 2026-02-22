@@ -5,7 +5,7 @@ import MobileBottomNav from '../navigation/MobileBottomNav';
 const MainLayout = () => {
   return (
     <div className="min-h-screen bg-background">
-      <main className="ios-scroll pb-12">
+      <main className="ios-scroll pb-14">
         <Outlet />
       </main>
       <MobileBottomNav />

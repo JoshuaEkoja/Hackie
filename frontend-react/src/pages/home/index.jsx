@@ -109,25 +109,25 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 ios-scroll">
+    <div className="min-h-screen bg-gray-50 pb-16 ios-scroll">
       {/* Header */}
       <div className="ios-header">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-[28px] font-bold text-gray-900">HackBase</h1>
+        <div className="px-3 py-2">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-xl font-bold text-gray-900">HackBase</h1>
             <button
               onClick={() => navigate('/profile')}
-              className="ios-touch-target w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors no-tap-highlight"
+              className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors no-tap-highlight"
             >
-              <Icon name="User" size={20} color="#6B7280" />
+              <Icon name="User" size={16} color="#6B7280" />
             </button>
           </div>
           <div className="relative">
-            <Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Icon name="Search" size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search hackathons..."
-              className="w-full pl-10 pr-4 h-[44px] bg-gray-100 rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all no-tap-highlight"
+              placeholder="Search..."
+              className="w-full pl-8 pr-3 h-9 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all no-tap-highlight"
             />
           </div>
         </div>
@@ -135,52 +135,52 @@ const Home = () => {
 
       {/* Location Banner */}
       {userLocation && (
-        <div className="bg-orange-50 border-b border-orange-100 px-4 py-2.5">
-          <div className="flex items-center gap-2 text-[13px]">
-            <Icon name="MapPin" size={14} className="text-orange-600" />
-            <span className="text-gray-700 font-medium">Showing hackathons near you</span>
+        <div className="bg-orange-50 border-b border-orange-100 px-3 py-1.5">
+          <div className="flex items-center gap-1.5 text-xs">
+            <Icon name="MapPin" size={12} className="text-orange-600" />
+            <span className="text-gray-700 font-medium">Near you</span>
           </div>
         </div>
       )}
 
       {/* Quick Actions */}
-      <div className="px-4 py-4">
-        <div className="grid grid-cols-2 gap-3">
+      <div className="px-3 py-2.5">
+        <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => navigate('/create-event')}
-            className="h-[88px] bg-orange-600 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-ios active:scale-[0.97] transition-transform no-tap-highlight"
+            className="py-2.5 px-2 bg-orange-600 rounded-lg flex flex-col items-center justify-center gap-1 active:scale-[0.97] transition-transform no-tap-highlight"
           >
-            <Icon name="Plus" size={28} color="white" />
-            <span className="text-[15px] font-semibold text-white">Create Event</span>
+            <Icon name="Plus" size={20} color="white" />
+            <span className="text-xs font-semibold text-white">Create</span>
           </button>
           <button
             onClick={() => navigate('/discover')}
-            className="h-[88px] bg-white border-2 border-orange-200 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-ios active:scale-[0.97] transition-transform no-tap-highlight"
+            className="py-2.5 px-2 bg-white border border-orange-200 rounded-lg flex flex-col items-center justify-center gap-1 active:scale-[0.97] transition-transform no-tap-highlight"
           >
-            <Icon name="Compass" size={28} color="#FF6B35" />
-            <span className="text-[15px] font-semibold text-orange-600">Discover</span>
+            <Icon name="Compass" size={20} color="#FF6B35" />
+            <span className="text-xs font-semibold text-orange-600">Discover</span>
           </button>
         </div>
       </div>
 
       {/* Hackathon Feed */}
-      <div className="px-4 pb-4">
-        <h2 className="text-[20px] font-bold text-gray-900 mb-3">Nearby Hackathons</h2>
+      <div className="px-3 pb-3">
+        <h2 className="text-lg font-bold text-gray-900 mb-2">Nearby Hackathons</h2>
         
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[1, 2, 3]?.map(i => (
               <div key={i} className="ios-card p-0 overflow-hidden animate-pulse">
-                <div className="h-40 bg-gray-200" />
-                <div className="p-4">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-gray-200 rounded w-1/2" />
+                <div className="h-28 bg-gray-200" />
+                <div className="p-2.5">
+                  <div className="h-3 bg-gray-200 rounded w-3/4 mb-1.5" />
+                  <div className="h-2 bg-gray-200 rounded w-1/2" />
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {nearbyHackathons?.map(hackathon => {
               const progress = calculateProgress(hackathon?.currentFunding, hackathon?.fundingGoal);
               
@@ -190,51 +190,47 @@ const Home = () => {
                   onClick={() => navigate(`/event/${hackathon?.id}`)}
                   className="w-full ios-card p-0 overflow-hidden active:scale-[0.98] transition-transform no-tap-highlight"
                 >
-                  <div className="relative h-40">
+                  <div className="relative h-28">
                     <img
                       src={hackathon?.image}
                       alt={`${hackathon?.name} event banner`}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-[11px] font-semibold text-gray-700">
+                    <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded-full text-[9px] font-semibold text-gray-700">
                       {hackathon?.category}
                     </div>
                     {hackathon?.distance && (
-                      <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-sm px-3 py-1.5 rounded-full text-[11px] font-semibold text-white flex items-center gap-1">
-                        <Icon name="MapPin" size={10} color="white" />
-                        {hackathon?.distance} mi away
+                      <div className="absolute bottom-2 left-2 bg-black/75 backdrop-blur-sm px-2 py-0.5 rounded-full text-[9px] font-semibold text-white flex items-center gap-0.5">
+                        <Icon name="MapPin" size={8} color="white" />
+                        {hackathon?.distance} mi
                       </div>
                     )}
                   </div>
                   
-                  <div className="p-4 text-left">
-                    <h3 className="font-bold text-[17px] text-gray-900 mb-2 leading-tight">{hackathon?.name}</h3>
-                    <div className="flex items-center gap-4 text-[13px] text-gray-600 mb-3">
-                      <div className="flex items-center gap-1">
-                        <Icon name="Calendar" size={13} color="#6B7280" />
-                        <span>{hackathon?.date}</span>
+                  <div className="p-2.5 text-left">
+                    <h3 className="font-bold text-sm text-gray-900 mb-1 leading-tight line-clamp-2">{hackathon?.name}</h3>
+                    <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                      <div className="flex items-center gap-0.5">
+                        <Icon name="Calendar" size={11} color="#6B7280" />
+                        <span className="truncate">{hackathon?.date?.split(' ')[0]}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Icon name="Users" size={13} color="#6B7280" />
+                      <div className="flex items-center gap-0.5">
+                        <Icon name="Users" size={11} color="#6B7280" />
                         <span>{hackathon?.participants}</span>
                       </div>
                     </div>
                     
                     {/* Funding Progress */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[13px]">
-                        <span className="text-gray-600 font-medium">Funding Progress</span>
-                        <span className="font-bold text-orange-600">{progress}%</span>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-600 font-medium">Funded</span>
+                        <span className="font-bold text-orange-600 text-xs">{progress}%</span>
                       </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all"
                           style={{ width: `${progress}%` }}
                         />
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-gray-500">
-                        <span className="font-medium">{formatCurrency(hackathon?.currentFunding)} raised</span>
-                        <span>Goal: {formatCurrency(hackathon?.fundingGoal)}</span>
                       </div>
                     </div>
                   </div>
