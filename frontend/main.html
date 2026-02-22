@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HackBase — Your Hackathon Companion</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Clash+Display:wght@400;500;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    </div>
+      </div>
+    </div>
 
-  :root {
-  --radius: 12px;
-  /* Add other non-color variables here */
-}
+      </div>
 
+
+    </main>
+    <div class="iphone-bottom-bar" aria-hidden="false" style="pointer-events:auto;">
+      <button class="btn btn-outline btn-sm" onclick="openContextModal()">🎯 Context</button>
+      <button class="btn btn-outline btn-sm" onclick="refreshHacks()">📍 Hacks</button>
+      <button class="btn btn-accent btn-sm" onclick="document.getElementById('chatInput').focus()">💬 Chat</button>
+    </div>
+  </div> <!-- .shell -->
+</div> <!-- .iphone-frame -->
 /* DARK THEME (Default) */
 [data-theme="dark"], :root {
   --bg: #0a0a0f;
@@ -61,7 +63,58 @@
   }
 
   /* ──── LAYOUT ──── */
-  .shell { display: flex; height: 100vh; }
+  /* iPhone-style centered frame */
+  .iphone-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.06), transparent 8%), var(--bg);
+  }
+
+  .shell { display: flex; height: 812px; width: 390px; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 80px rgba(2,6,23,0.6); background: linear-gradient(180deg, var(--surface), var(--surface2)); }
+
+  /* iPhone chrome inside the frame */
+  .screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, transparent 0%, transparent 100%);
+  }
+
+  .status-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+
+  .notch {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 210px;
+    height: 28px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.15));
+    border-radius: 14px;
+    box-shadow: inset 0 -6px 12px rgba(0,0,0,0.35);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .screen-inner {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
 
   /* ──── SIDEBAR ──── */
   .sidebar {
@@ -144,6 +197,20 @@
     margin-top: auto;
     padding-top: 16px;
     border-top: 1px solid var(--border);
+  }
+
+  /* Mobile adjustments: hide desktop sidebar and provide bottom tab bar */
+  @media (max-width: 420px) {
+    .sidebar { display: none; }
+    .main { padding: 12px; }
+    .shell { width: 360px; height: 780px; }
+    .iphone-bottom-bar { display: flex; position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); gap: 12px; z-index: 12 }
+    .iphone-bottom-bar .btn { padding: 10px 12px; border-radius: 12px; font-size:13px }
+    /* Make main full width when sidebar hidden */
+    .screen-inner { flex-direction: column; }
+    main.main { width: 100%; }
+    .chat-window { height: 240px; }
+    .card { margin-bottom: 12px; }
   }
 
   .user-pill {
@@ -717,13 +784,20 @@
     .three-col { grid-template-columns: 1fr 1fr; }
   }
 </style>
-</head>
-<body>
-<div class="shell">
+    </div>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo">
+  </main>
+      </div> <!-- .screen-inner -->
+
+      <div class="iphone-bottom-bar" aria-hidden="false" style="pointer-events:auto;">
+        <button class="btn btn-outline btn-sm" onclick="openContextModal()">🎯 Context</button>
+        <button class="btn btn-outline btn-sm" onclick="refreshHacks()">📍 Hacks</button>
+        <button class="btn btn-accent btn-sm" onclick="document.getElementById('chatInput').focus()">💬 Chat</button>
+      </div>
+
+    </div> <!-- .screen -->
+  </div> <!-- .shell -->
+</div> <!-- .iphone-frame -->
       <div class="logo-mark">H</div>
       <div class="logo-text">Hack<span>Base</span></div>
     </div>
@@ -770,18 +844,20 @@
         <span style="color: var(--muted); font-size: 12px;">⋮</span>
       </div>
     </div>
-  </aside>
+    </div>
 
-  <!-- MAIN -->
-  <main class="main">
+  </main>
+      </div> <!-- .screen-inner -->
 
-    <!-- HEADER -->
-    <div class="header">
-      <div>
-        <div class="page-title">Dashboard</div>
-        <div style="font-size:13px; color:var(--muted); margin-top:4px;">Welcome Back, Alex · Friday Feb 20, 2026</div>
+      <div class="iphone-bottom-bar" aria-hidden="false" style="pointer-events:auto;">
+        <button class="btn btn-outline btn-sm" onclick="openContextModal()">🎯 Context</button>
+        <button class="btn btn-outline btn-sm" onclick="refreshHacks()">📍 Hacks</button>
+        <button class="btn btn-accent btn-sm" onclick="document.getElementById('chatInput').focus()">💬 Chat</button>
       </div>
-      <div class="header-actions">
+
+    </div> <!-- .screen -->
+  </div> <!-- .shell -->
+</div> <!-- .iphone-frame -->
         <span class="badge badge-green"><span class="badge-dot"></span>API Connected</span>
         <span class="badge badge-purple"><span class="badge-dot"></span>SOL Wallet</span>
         <button class="btn btn-accent btn-sm">+ New Project</button>
@@ -1058,7 +1134,14 @@
 
     </div>
 
+  <div class="iphone-bottom-bar" aria-hidden="false" style="pointer-events:auto;">
+    <button class="btn btn-outline btn-sm" onclick="openContextModal()">🎯 Context</button>
+    <button class="btn btn-outline btn-sm" onclick="refreshHacks()">📍 Hacks</button>
+    <button class="btn btn-accent btn-sm" onclick="document.getElementById('chatInput').focus()">💬 Chat</button>
+  </div>
+
   </main>
+</div>
 </div>
 
 <!-- HACKATHON CONTEXT MODAL -->
