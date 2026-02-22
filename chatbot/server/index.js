@@ -2,8 +2,34 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config'; // This replaces the need for dotenv.config()
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getCollection } from './db.js';
+import { saveToMongo } from './db.js';
 
 const app = express();
+
+app.get('/api/hackathons', async (req, res) => {
+    try {
+        const { city, search } = req.query;
+        let query = {};
+
+        // Only add to the query if the value actually exists and isn't just whitespace
+        if (city && city.trim() !== "") {
+            query.location = { $regex: city.trim(), $options: 'i' };
+        }
+
+        if (search && search.trim() !== "") {
+            query.title = { $regex: search.trim(), $options: 'i' };
+        }
+
+        console.log("🔍 Active Query:", query); // Debugging line!
+
+        const hackathons = await Hackathon.find(query);
+        res.json(hackathons);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -115,6 +141,17 @@ app.post('/chat', async (req, res) => {
     } catch (error) { // handle any errors that occur during the API call
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+
+// endpoint to fetch hackathon data from MongoDB and send it to the client
+app.get('/api/hackathons', async (req, res) => {
+    try {
+        const collection = await getCollection();
+        const hackathons = await collection.find({}).toArray();
+        res.json(hackathons); // This sends the data back to React
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch from DB" });
     }
 });
 
